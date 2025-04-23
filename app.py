@@ -7,46 +7,25 @@ st.title("🔥 Resting Metabolic Rate (RMR) Calculator")
 st.markdown("""
 Upload your **PNOE RMR CSV file** and this app will:
 - Use the `EE(kcal/day)` column (energy expenditure) as your RMR value
-- Analyze a fixed 60–90 second window
 - Find the **lowest average RMR** across *any* 60–90 second span
-- Display the **lowest single point** and **lowest rolling average**
+- Display the **lowest heart rate** (Resting Heart Rate), filtering out values ≤ 25 bpm
 """)
 
 uploaded_file = st.file_uploader("📤 Upload your PNOE CSV file", type="csv")
 
 if uploaded_file is not None:
-    # Try reading the file
     try:
         df = pd.read_csv(uploaded_file, sep=';')
     except Exception as e:
         st.error(f"❌ Error processing file: {e}")
     else:
-        # Proceed if read was successful
-        if "EE(kcal/day)" not in df.columns or "T(sec)" not in df.columns:
-            st.error("❌ Required columns 'EE(kcal/day)' or 'T(sec)' not found in your CSV.")
+        if "EE(kcal/day)" not in df.columns or "T(sec)" not in df.columns or "HR(bpm)" not in df.columns:
+            st.error("❌ Required columns 'EE(kcal/day)', 'T(sec)', or 'HR(bpm)' not found in your CSV.")
         else:
-            st.success("✅ Data loaded successfully!")
-
-            st.subheader("📋 Preview of Energy Expenditure Data")
-            st.dataframe(df[['T(sec)', 'PHASE', 'EE(kcal/day)']])
-
-            # --- Fixed Range Analysis (60–90 sec) ---
-            st.subheader("📊 Fixed Window (60–90 sec) RMR Stats")
-            filtered_df = df[(df['T(sec)'] >= 60) & (df['T(sec)'] <= 90)]
-
-            if not filtered_df.empty:
-                lowest_rmr_row = filtered_df.loc[filtered_df['EE(kcal/day)'].idxmin()]
-                average_rmr = filtered_df['EE(kcal/day)'].mean()
-
-                st.markdown(f"""
-                - 🔻 **Lowest RMR:** `{lowest_rmr_row['EE(kcal/day)']:.2f} kcal/day` at `T = {lowest_rmr_row['T(sec)']} sec`
-                - 📈 **Average RMR (60–90 sec):** `{average_rmr:.2f} kcal/day`
-                """)
-            else:
-                st.warning("⚠️ No data points found between 60 and 90 seconds.")
+            st.success("✅ File loaded successfully.")
 
             # --- Smart Rolling Window Analysis (60–90 second windows) ---
-            st.subheader("🧠 Smart Window: Lowest Average RMR (60–90 sec span)")
+            st.subheader("🧠 Lowest Average RMR (60–90 Second Span)")
 
             def find_lowest_average_rmr(df, min_window=60, max_window=90):
                 best_avg = float('inf')
@@ -73,13 +52,22 @@ if uploaded_file is not None:
 
             lowest_avg_rmr, start_time, end_time = find_lowest_average_rmr(df)
 
-            if start_time is not None:
+            if start_time is not None and end_time is not None:
                 st.markdown(f"""
                 - 🟢 **Lowest Rolling Average RMR:** `{lowest_avg_rmr:.2f} kcal/day`
                 - ⏱️ **Time Range:** `{start_time} sec to {end_time} sec` (`{end_time - start_time:.0f} seconds`)
                 """)
             else:
                 st.warning("⚠️ No valid time range found between 60–90 seconds.")
+
+            # --- Resting Heart Rate (Filtered for HR > 25 bpm) ---
+            valid_heart_rates = df[df['HR(bpm)'] > 25]['HR(bpm)']
+            if not valid_heart_rates.empty:
+                resting_hr = valid_heart_rates.min()
+                st.subheader("💓 Resting Heart Rate")
+                st.markdown(f"- 🔻 **Lowest Heart Rate (Resting HR):** `{resting_hr:.0f} bpm`")
+            else:
+                st.warning("⚠️ No valid heart rate values found above 25 bpm.")
 
             # --- Downloadable output ---
             csv = df.to_csv(index=False).encode('utf-8')
