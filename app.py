@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import plotly.graph_objects as go
 
 st.set_page_config(page_title="🔥 RMR Calculator from PNOE CSV", page_icon="🔥")
 
@@ -9,7 +10,7 @@ Upload your **PNOE RMR CSV file** and this app will:
 - Use the `EE(kcal/day)` column as your RMR value
 - Find the **lowest average RMR** across any 60–90 second span
 - Display the **resting heart rate** (lowest HR > 25 bpm)
-- Show **fat vs. carbohydrate utilization** during that time range
+- Show **fat vs. carbohydrate utilization** during that time range with a custom chart
 """)
 
 uploaded_file = st.file_uploader("📤 Upload your PNOE CSV file", type="csv")
@@ -91,11 +92,19 @@ if uploaded_file is not None:
                     - 🍞 **Carbohydrates:** {avg_carb_kcal:.3f} kcal/min → **{carb_grams:.3f} g/min** (**{carb_percent:.2f}%**)
                     """)
 
-                    st.markdown("### 🧪 Visual Breakdown")
-                    st.bar_chart(pd.DataFrame({
-                        'Fuel Type': ['Fat', 'Carbohydrates'],
-                        'Percent Utilization': [fat_percent, carb_percent]
-                    }).set_index('Fuel Type'))
+                    # Plotly bar chart with custom color for fat
+                    fig = go.Figure(data=[
+                        go.Bar(name='Fat', x=['Fat'], y=[fat_percent], marker_color='yellow'),
+                        go.Bar(name='Carbohydrates', x=['Carbohydrates'], y=[carb_percent], marker_color='dodgerblue')
+                    ])
+                    fig.update_layout(
+                        title='Fuel Utilization Breakdown',
+                        yaxis_title='Percent Utilization (%)',
+                        xaxis_title='Fuel Type',
+                        showlegend=False,
+                        height=400
+                    )
+                    st.plotly_chart(fig, use_container_width=True)
                 else:
                     st.warning("⚠️ No fuel data available in the RMR window.")
             else:
