@@ -6,9 +6,10 @@ st.set_page_config(page_title="🔥 RMR Calculator from PNOE CSV", page_icon="�
 st.title("🔥 Resting Metabolic Rate (RMR) Calculator")
 st.markdown("""
 Upload your **PNOE RMR CSV file** and this app will:
-- Use the `EE(kcal/day)` column (energy expenditure) as your RMR value
-- Find the **lowest average RMR** across *any* 60–90 second span
-- Display the **lowest heart rate** (Resting Heart Rate), filtering out values ≤ 25 bpm
+- Use the `EE(kcal/day)` column as your RMR value
+- Find the **lowest average RMR** across any 60–90 second span
+- Display the **resting heart rate** (lowest HR > 25 bpm)
+- Show **fat vs. carbohydrate utilization** during that time range
 """)
 
 uploaded_file = st.file_uploader("📤 Upload your PNOE CSV file", type="csv")
@@ -68,6 +69,37 @@ if uploaded_file is not None:
                 st.markdown(f"- 🔻 **Lowest Heart Rate (Resting HR):** `{resting_hr:.0f} bpm`")
             else:
                 st.warning("⚠️ No valid heart rate values found above 25 bpm.")
+
+            # --- Fat vs Carbohydrate Utilization Analysis ---
+            if "FAT(kcal)" in df.columns and "CARBS(kcal)" in df.columns:
+                st.subheader("🥑 Fuel Utilization Breakdown")
+
+                rmr_range_df = df[(df['T(sec)'] >= start_time) & (df['T(sec)'] <= end_time)]
+
+                avg_fat_kcal = rmr_range_df['FAT(kcal)'].mean()
+                avg_carb_kcal = rmr_range_df['CARBS(kcal)'].mean()
+                total_kcal = avg_fat_kcal + avg_carb_kcal
+
+                if total_kcal > 0:
+                    fat_percent = (avg_fat_kcal / total_kcal) * 100
+                    carb_percent = (avg_carb_kcal / total_kcal) * 100
+                    fat_grams = avg_fat_kcal / 9
+                    carb_grams = avg_carb_kcal / 4
+
+                    st.markdown(f"""
+                    - 🥑 **Fat:** {avg_fat_kcal:.3f} kcal/min → **{fat_grams:.3f} g/min** (**{fat_percent:.2f}%**)
+                    - 🍞 **Carbohydrates:** {avg_carb_kcal:.3f} kcal/min → **{carb_grams:.3f} g/min** (**{carb_percent:.2f}%**)
+                    """)
+
+                    st.markdown("### 🧪 Visual Breakdown")
+                    st.bar_chart(pd.DataFrame({
+                        'Fuel Type': ['Fat', 'Carbohydrates'],
+                        'Percent Utilization': [fat_percent, carb_percent]
+                    }).set_index('Fuel Type'))
+                else:
+                    st.warning("⚠️ No fuel data available in the RMR window.")
+            else:
+                st.warning("⚠️ Columns 'FAT(kcal)' and 'CARBS(kcal)' are missing from your file.")
 
             # --- Downloadable output ---
             csv = df.to_csv(index=False).encode('utf-8')
