@@ -151,6 +151,17 @@ if uploaded_file is not None:
                     ])
                     fig.update_layout(title='Fuel Utilization Breakdown (Pie Chart)', height=400)
                     st.plotly_chart(fig, use_container_width=True)
+
+                    # Metabolic Flexibility Calculation
+                    met_flex_percent = (avg_fat_kcal / total_kcal) * 100
+                    if met_flex_percent > 70:
+                        flex_label, flex_color = "Excellent", "green"
+                    elif met_flex_percent > 50:
+                        flex_label, flex_color = "Moderate", "orange"
+                    else:
+                        flex_label, flex_color = "Low", "red"
+
+                    st.markdown(f"- 🔄 **Metabolic Flexibility:** <span style='color:{flex_color}'>{met_flex_percent:.1f}%</span> ({flex_label})", unsafe_allow_html=True)
                 else:
                     st.warning("⚠️ No fuel data available in the RMR window.")
 
