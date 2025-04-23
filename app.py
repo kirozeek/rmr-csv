@@ -189,7 +189,7 @@ if uploaded_file is not None:
                     if gender == "Male":
                         protein_grams = target_weight * 1.0
                     else:
-                        protein_grams = target_weight * 0.9
+                        protein_grams = target_weight * 0.8
 
                     protein_cals = protein_grams * 4
                     fat_cals = 0.25 * lowest_avg_rmr
