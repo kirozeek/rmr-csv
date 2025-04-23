@@ -51,6 +51,7 @@ if uploaded_file is not None:
             st.success("✅ File loaded successfully.")
 
             st.subheader("🧠 Lowest Average RMR (75–90 Second Span)")
+st.markdown("Knowing your Resting Metabolic Rate (RMR) helps determine the minimum number of calories your body needs to function at rest. This baseline is essential for designing effective weight management plans, setting accurate calorie targets, and understanding how your metabolism supports overall energy balance.")
 
             def find_lowest_average_rmr(df, min_window=75, max_window=90):
                 best_avg = float('inf')
