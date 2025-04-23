@@ -102,7 +102,6 @@ if uploaded_file is not None:
                 resting_hr = valid_heart_rates.min()
                 st.subheader("💓 Resting Heart Rate")
 
-                # Rank resting heart rate by age and gender
                 def rank_rhr(hr, age, gender):
                     if gender == "Male":
                         if hr < 56: return "Athlete", "green"
@@ -119,10 +118,13 @@ if uploaded_file is not None:
                         elif hr < 82: return "Average", "orangered"
                         else: return "Below Average", "red"
                     else:
-                        return "Unknown", "gray"
+                        return "Unranked", "gray"
 
-                rhr_rank, rhr_color = rank_rhr(resting_hr, age, gender)
-                st.markdown(f"- 🔻 **Resting HR:** <span style='color:{rhr_color}'>{resting_hr:.0f} bpm</span> ({rhr_rank})", unsafe_allow_html=True)
+                if gender in ["Male", "Female"] and age > 0:
+                    rhr_rank, rhr_color = rank_rhr(resting_hr, age, gender)
+                    st.markdown(f"- 🔻 **Resting HR:** <span style='color:{rhr_color}'>{resting_hr:.0f} bpm</span> ({rhr_rank})", unsafe_allow_html=True)
+                else:
+                    st.markdown(f"- 🔻 **Resting HR:** `{resting_hr:.0f} bpm` _(Ranking requires age and gender input)_")
             else:
                 st.warning("⚠️ No valid heart rate values found above 25 bpm.")
 
