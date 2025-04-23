@@ -10,8 +10,8 @@ Upload your **PNOE RMR CSV file** and this app will:
 - Use the `EE(kcal/day)` column as your RMR value
 - Find the **lowest average RMR** across any 60–90 second span
 - Display the **resting heart rate** (lowest HR > 25 bpm)
+- Display **average breathing frequency** with hypoventilation/hyperventilation alerts
 - Show **fat vs. carbohydrate utilization** with a pie chart
-- Display **average breathing frequency** during the RMR window
 """)
 
 uploaded_file = st.file_uploader("📤 Upload your PNOE CSV file", type="csv")
@@ -64,12 +64,18 @@ if uploaded_file is not None:
                 - ⏱️ **Time Range:** `{start_time} sec to {end_time} sec` (`{end_time - start_time:.0f} seconds`)
                 """)
 
-                # Subset data for this time range
+                # Subset data for RMR window
                 rmr_range_df = df[(df['T(sec)'] >= start_time) & (df['T(sec)'] <= end_time)]
 
                 # --- Average Breathing Frequency ---
                 avg_bf = rmr_range_df['BF(bpm)'].mean()
-                st.markdown(f"- 💨 **Average Breathing Frequency:** `{avg_bf:.2f} breaths/min`")
+
+                if avg_bf < 6:
+                    st.markdown(f"- 💨 **Average Breathing Frequency:** <span style='color:red'>{avg_bf:.2f} breaths/min</span> ⚠️ _Hypoventilation_", unsafe_allow_html=True)
+                elif avg_bf > 18:
+                    st.markdown(f"- 💨 **Average Breathing Frequency:** <span style='color:red'>{avg_bf:.2f} breaths/min</span> ⚠️ _Hyperventilation_", unsafe_allow_html=True)
+                else:
+                    st.markdown(f"- 💨 **Average Breathing Frequency:** `{avg_bf:.2f} breaths/min`")
 
             else:
                 st.warning("⚠️ No valid time range found between 60–90 seconds.")
@@ -103,7 +109,6 @@ if uploaded_file is not None:
                     - 🍞 **Carbohydrates:** {avg_carb_kcal:.3f} kcal/min → **{carb_grams:.3f} g/min** (**{carb_percent:.2f}%**)
                     """)
 
-                    # Plotly pie chart
                     fig = go.Figure(data=[
                         go.Pie(
                             labels=['Fat', 'Carbohydrates'],
