@@ -52,7 +52,7 @@ if uploaded_file is not None:
 
             st.subheader("🧠 Lowest Average RMR (60–90 Second Span)")
 
-            def find_lowest_average_rmr(df, min_window=60, max_window=90):
+            def find_lowest_average_rmr(df, min_window=75, max_window=90):
                 best_avg = float('inf')
                 best_start_time = None
                 best_end_time = None
