@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
 
-st.set_page_config(page_title="🔥 RMR Calculator from PNOE CSV", page_icon="🔥")
+st.set_page_config(page_title="🔥 RMR Calculator from CSV", page_icon="🔥")
 
 # --- Sidebar: Client Information ---
 st.sidebar.header("🧍 Client Information")
@@ -26,7 +26,7 @@ if first_name or last_name:
     st.markdown(f"- ⚖️ **Weight:** {weight_lb:.1f} lbs")
 
 st.markdown("""
-Upload your **PNOE RMR CSV file** and this app will:
+Upload your **RMR CSV file** and this app will:
 - Use the `EE(kcal/day)` column as your RMR value
 - Find the **lowest average RMR** across any 60–90 second span
 - Display the **resting heart rate** (lowest HR > 25 bpm)
@@ -34,7 +34,7 @@ Upload your **PNOE RMR CSV file** and this app will:
 - Show **fat vs. carbohydrate utilization** with a pie chart
 """)
 
-uploaded_file = st.file_uploader("📤 Upload your PNOE CSV file", type="csv")
+uploaded_file = st.file_uploader("📤 Upload your CSV file", type="csv")
 
 if uploaded_file is not None:
     try:
@@ -101,7 +101,28 @@ if uploaded_file is not None:
             if not valid_heart_rates.empty:
                 resting_hr = valid_heart_rates.min()
                 st.subheader("💓 Resting Heart Rate")
-                st.markdown(f"- 🔻 **Lowest Heart Rate (Resting HR):** `{resting_hr:.0f} bpm`")
+
+                # Rank resting heart rate by age and gender
+                def rank_rhr(hr, age, gender):
+                    if gender == "Male":
+                        if hr < 56: return "Athlete", "green"
+                        elif hr < 61: return "Excellent", "limegreen"
+                        elif hr < 67: return "Good", "yellowgreen"
+                        elif hr < 74: return "Above Average", "orange"
+                        elif hr < 81: return "Average", "orangered"
+                        else: return "Below Average", "red"
+                    elif gender == "Female":
+                        if hr < 60: return "Athlete", "green"
+                        elif hr < 65: return "Excellent", "limegreen"
+                        elif hr < 70: return "Good", "yellowgreen"
+                        elif hr < 76: return "Above Average", "orange"
+                        elif hr < 82: return "Average", "orangered"
+                        else: return "Below Average", "red"
+                    else:
+                        return "Unknown", "gray"
+
+                rhr_rank, rhr_color = rank_rhr(resting_hr, age, gender)
+                st.markdown(f"- 🔻 **Resting HR:** <span style='color:{rhr_color}'>{resting_hr:.0f} bpm</span> ({rhr_rank})", unsafe_allow_html=True)
             else:
                 st.warning("⚠️ No valid heart rate values found above 25 bpm.")
 
