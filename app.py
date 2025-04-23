@@ -195,7 +195,9 @@ if uploaded_file is not None:
                     st.table(macro_df)
 
               
-            st.download_button(
+            csv = df.to_csv(index=False).encode('utf-8')
+
+st.download_button(
                 label="📥 Download Full CSV with RMR",
                 data=csv,
                 file_name="rmr_energy_results.csv",
