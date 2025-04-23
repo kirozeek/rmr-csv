@@ -140,6 +140,29 @@ if uploaded_file is not None:
                 else:
                     st.warning("⚠️ No fuel data available in the RMR window.")
 
+            # --- Predicted RMR Calculation ---
+            if gender in ["Male", "Female"] and height_in > 0 and weight_lb > 0 and age > 0:
+                if gender == "Male":
+                    predicted_rmr = 66 + (6.23 * weight_lb) + (12.7 * height_in) - (6.8 * age)
+                else:
+                    predicted_rmr = 655 + (4.35 * weight_lb) + (4.7 * height_in) - (4.7 * age)
+
+                st.subheader("📐 Predicted vs. Measured RMR")
+                st.markdown(f"- 🧮 **Predicted RMR (Mifflin-St Jeor):** `{predicted_rmr:.2f} kcal/day`")
+
+                bar_fig = go.Figure(data=[
+                    go.Bar(name="Measured RMR", x=["RMR"], y=[lowest_avg_rmr], marker_color="green"),
+                    go.Bar(name="Predicted RMR", x=["RMR"], y=[predicted_rmr], marker_color="blue")
+                ])
+                bar_fig.update_layout(title="Measured vs. Predicted RMR", barmode="group", yaxis_title="kcal/day")
+                st.plotly_chart(bar_fig, use_container_width=True)
+
+                line_fig = go.Figure()
+                line_fig.add_trace(go.Scatter(x=["Measured", "Predicted"], y=[lowest_avg_rmr, predicted_rmr],
+                                              mode="lines+markers", name="RMR Comparison"))
+                line_fig.update_layout(title="RMR Comparison (Line Graph)", yaxis_title="kcal/day")
+                st.plotly_chart(line_fig, use_container_width=True)
+
             csv = df.to_csv(index=False).encode('utf-8')
             st.download_button(
                 label="📥 Download Full CSV with RMR",
