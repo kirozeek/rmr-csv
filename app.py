@@ -13,6 +13,7 @@ gender = st.sidebar.selectbox("Gender", ["", "Male", "Female", "Other"])
 age = st.sidebar.number_input("Age", min_value=0, max_value=120, step=1)
 height_in = st.sidebar.number_input("Height (inches)", min_value=0.0, step=0.1)
 weight_lb = st.sidebar.number_input("Weight (lbs)", min_value=0.0, step=0.1)
+target_weight = st.sidebar.number_input("Target Weight (lbs)", min_value=0.0, step=0.1)
 
 st.title("🔥 Resting Metabolic Rate (RMR) Calculator")
 
@@ -24,6 +25,8 @@ if first_name or last_name:
     st.markdown(f"- 🎂 **Age:** {age} years")
     st.markdown(f"- 📏 **Height:** {height_in:.1f} in")
     st.markdown(f"- ⚖️ **Weight:** {weight_lb:.1f} lbs")
+    if target_weight > 0:
+        st.markdown(f"- 🎯 **Target Weight:** {target_weight:.1f} lbs")
 
 st.markdown("""
 Upload your **RMR CSV file** and this app will:
@@ -57,23 +60,19 @@ if uploaded_file is not None:
                 best_avg = float('inf')
                 best_start_time = None
                 best_end_time = None
-
                 time_points = df['T(sec)'].tolist()
                 for i in range(len(time_points)):
                     for j in range(i + 1, len(time_points)):
                         start_time = time_points[i]
                         end_time = time_points[j]
                         duration = end_time - start_time
-
                         if min_window <= duration <= max_window:
                             sub_df = df[(df['T(sec)'] >= start_time) & (df['T(sec)'] <= end_time)]
                             avg_rmr = sub_df['EE(kcal/day)'].mean()
-
                             if avg_rmr < best_avg:
                                 best_avg = avg_rmr
                                 best_start_time = start_time
                                 best_end_time = end_time
-
                 return best_avg, best_start_time, best_end_time
 
             lowest_avg_rmr, start_time, end_time = find_lowest_average_rmr(df)
@@ -83,11 +82,8 @@ if uploaded_file is not None:
                 - 🟢 **Lowest Rolling Average RMR:** `{lowest_avg_rmr:.2f} kcal/day`
                 - ⏱️ **Time Range:** `{start_time} sec to {end_time} sec` (`{end_time - start_time:.0f} seconds`)
                 """)
-
                 rmr_range_df = df[(df['T(sec)'] >= start_time) & (df['T(sec)'] <= end_time)]
-
                 avg_bf = rmr_range_df['BF(bpm)'].mean()
-
                 if avg_bf < 6:
                     st.markdown(f"- 💨 **Average Breathing Frequency:** <span style='color:red'>{avg_bf:.2f} breaths/min</span> ⚠️ _Hypoventilation_", unsafe_allow_html=True)
                 elif avg_bf > 18:
@@ -96,6 +92,7 @@ if uploaded_file is not None:
                     st.markdown(f"- 💨 **Average Breathing Frequency:** `{avg_bf:.2f} breaths/min`")
             else:
                 st.warning("⚠️ No valid time range found between 75–90 seconds.")
+                rmr_range_df = pd.DataFrame()
 
             valid_heart_rates = df[df['HR(bpm)'] > 25]['HR(bpm)']
             if not valid_heart_rates.empty:
@@ -131,22 +128,18 @@ if uploaded_file is not None:
 
             if not rmr_range_df.empty:
                 st.subheader("🥑 Fuel Utilization Breakdown")
-
                 avg_fat_kcal = rmr_range_df['FAT(kcal)'].mean()
                 avg_carb_kcal = rmr_range_df['CARBS(kcal)'].mean()
                 total_kcal = avg_fat_kcal + avg_carb_kcal
-
                 if total_kcal > 0:
                     fat_percent = (avg_fat_kcal / total_kcal) * 100
                     carb_percent = (avg_carb_kcal / total_kcal) * 100
                     fat_grams = avg_fat_kcal / 9
                     carb_grams = avg_carb_kcal / 4
-
                     st.markdown(f"""
                     - 🥑 **Fat:** {avg_fat_kcal:.3f} kcal/min → **{fat_grams:.3f} g/min** (**{fat_percent:.2f}%**)
                     - 🍞 **Carbohydrates:** {avg_carb_kcal:.3f} kcal/min → **{carb_grams:.3f} g/min** (**{carb_percent:.2f}%**)
                     """)
-
                     fig = go.Figure(data=[
                         go.Pie(
                             labels=['Fat', 'Carbohydrates'],
@@ -166,17 +159,14 @@ if uploaded_file is not None:
                     predicted_rmr = 66 + (6.23 * weight_lb) + (12.7 * height_in) - (6.8 * age)
                 else:
                     predicted_rmr = 655 + (4.35 * weight_lb) + (4.7 * height_in) - (4.7 * age)
-
                 st.subheader("📐 Predicted vs. Measured RMR")
                 st.markdown(f"- 🧮 **Predicted RMR (Mifflin-St Jeor):** `{predicted_rmr:.2f} kcal/day`")
-
                 bar_fig = go.Figure(data=[
                     go.Bar(name="Measured RMR", x=["RMR"], y=[lowest_avg_rmr], marker_color="green"),
                     go.Bar(name="Predicted RMR", x=["RMR"], y=[predicted_rmr], marker_color="blue")
                 ])
                 bar_fig.update_layout(title="Measured vs. Predicted RMR", barmode="group", yaxis_title="kcal/day")
                 st.plotly_chart(bar_fig, use_container_width=True)
-
                 line_fig = go.Figure()
                 line_fig.add_trace(go.Scatter(x=["Measured", "Predicted"], y=[lowest_avg_rmr, predicted_rmr], mode="lines+markers", name="RMR Comparison"))
                 line_fig.update_layout(title="RMR Comparison (Line Graph)", yaxis_title="kcal/day")
