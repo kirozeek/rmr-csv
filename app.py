@@ -194,30 +194,7 @@ if uploaded_file is not None:
 
                     st.table(macro_df)
 
-                    st.subheader("🍽️ Macronutrient Breakdown")
-
-            if gender in ["Male", "Female"] and target_weight > 0 and lowest_avg_rmr > 0:
-                if gender == "Male":
-                    protein_grams = target_weight * 1.0
-                else:
-                    protein_grams = target_weight * 0.9
-
-                protein_cals = protein_grams * 4
-                fat_cals = 0.25 * lowest_avg_rmr
-                carb_cals = lowest_avg_rmr - protein_cals - fat_cals
-
-                fat_grams = fat_cals / 9
-                carb_grams = carb_cals / 4
-
-                macro_df = pd.DataFrame({
-                    "Macronutrient": ["Carbohydrates", "Proteins", "Fats", "Total"],
-                    "Grams": [round(carb_grams, 1), round(protein_grams, 1), round(fat_grams, 1), ""],
-                    "Calories": [round(carb_cals, 0), round(protein_cals, 0), round(fat_cals, 0), round(lowest_avg_rmr, 0)]
-                })
-
-                st.table(macro_df)
-
-
+              
             st.download_button(
                 label="📥 Download Full CSV with RMR",
                 data=csv,
