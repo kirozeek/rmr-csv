@@ -10,6 +10,7 @@ first_name = st.sidebar.text_input("First Name")
 last_name = st.sidebar.text_input("Last Name")
 test_date = st.sidebar.date_input("Date of Test")
 gender = st.sidebar.selectbox("Gender", ["", "Male", "Female", "Other"])
+age = st.sidebar.number_input("Age", min_value=0, max_value=120, step=1)
 height_in = st.sidebar.number_input("Height (inches)", min_value=0.0, step=0.1)
 weight_lb = st.sidebar.number_input("Weight (lbs)", min_value=0.0, step=0.1)
 
@@ -20,6 +21,7 @@ if first_name or last_name:
     st.markdown(f"### Report for: **{first_name} {last_name}**")
     st.markdown(f"- 🗓️ **Date of Test:** {test_date}")
     st.markdown(f"- 👤 **Gender:** {gender}")
+    st.markdown(f"- 🎂 **Age:** {age} years")
     st.markdown(f"- 📏 **Height:** {height_in:.1f} in")
     st.markdown(f"- ⚖️ **Weight:** {weight_lb:.1f} lbs")
 
