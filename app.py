@@ -189,7 +189,7 @@ if uploaded_file is not None:
                     macro_df = pd.DataFrame({
                         "Macronutrient": ["Carbohydrates", "Protein", "Fats", "Total"],
                         "Grams": [round(carb_grams), round(protein_grams), round(fat_grams), ""],
-                        "Calories": [round(carb_cals, 0), round(protein_cals, 0), round(fat_cals, 0), round(lowest_avg_rmr, 0)],
+                        "Calories": [int(round(carb_cals)), int(round(protein_cals)), int(round(fat_cals)), int(round(lowest_avg_rmr))],
                         "% of Total Calories": [
     f"{round(carb_cals / lowest_avg_rmr * 100)}%",
     f"{round(protein_cals / lowest_avg_rmr * 100)}%",
