@@ -50,7 +50,7 @@ if uploaded_file is not None:
         else:
             st.success("✅ File loaded successfully.")
 
-            st.subheader("🧠 Lowest Average RMR (60–90 Second Span)")
+            st.subheader("🧠 Lowest Average RMR (75–90 Second Span)")
 
             def find_lowest_average_rmr(df, min_window=75, max_window=90):
                 best_avg = float('inf')
