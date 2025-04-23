@@ -4,7 +4,25 @@ import plotly.graph_objects as go
 
 st.set_page_config(page_title="🔥 RMR Calculator from PNOE CSV", page_icon="🔥")
 
+# --- Sidebar: Client Information ---
+st.sidebar.header("🧍 Client Information")
+first_name = st.sidebar.text_input("First Name")
+last_name = st.sidebar.text_input("Last Name")
+test_date = st.sidebar.date_input("Date of Test")
+gender = st.sidebar.selectbox("Gender", ["", "Male", "Female", "Other"])
+height_in = st.sidebar.number_input("Height (inches)", min_value=0.0, step=0.1)
+weight_lb = st.sidebar.number_input("Weight (lbs)", min_value=0.0, step=0.1)
+
 st.title("🔥 Resting Metabolic Rate (RMR) Calculator")
+
+# --- Display Client Info ---
+if first_name or last_name:
+    st.markdown(f"### Report for: **{first_name} {last_name}**")
+    st.markdown(f"- 🗓️ **Date of Test:** {test_date}")
+    st.markdown(f"- 👤 **Gender:** {gender}")
+    st.markdown(f"- 📏 **Height:** {height_in:.1f} in")
+    st.markdown(f"- ⚖️ **Weight:** {weight_lb:.1f} lbs")
+
 st.markdown("""
 Upload your **PNOE RMR CSV file** and this app will:
 - Use the `EE(kcal/day)` column as your RMR value
@@ -30,7 +48,6 @@ if uploaded_file is not None:
         else:
             st.success("✅ File loaded successfully.")
 
-            # --- Smart Rolling Window Analysis (60–90 second windows) ---
             st.subheader("🧠 Lowest Average RMR (60–90 Second Span)")
 
             def find_lowest_average_rmr(df, min_window=60, max_window=90):
@@ -64,10 +81,8 @@ if uploaded_file is not None:
                 - ⏱️ **Time Range:** `{start_time} sec to {end_time} sec` (`{end_time - start_time:.0f} seconds`)
                 """)
 
-                # Subset data for RMR window
                 rmr_range_df = df[(df['T(sec)'] >= start_time) & (df['T(sec)'] <= end_time)]
 
-                # --- Average Breathing Frequency ---
                 avg_bf = rmr_range_df['BF(bpm)'].mean()
 
                 if avg_bf < 6:
@@ -76,12 +91,10 @@ if uploaded_file is not None:
                     st.markdown(f"- 💨 **Average Breathing Frequency:** <span style='color:red'>{avg_bf:.2f} breaths/min</span> ⚠️ _Hyperventilation_", unsafe_allow_html=True)
                 else:
                     st.markdown(f"- 💨 **Average Breathing Frequency:** `{avg_bf:.2f} breaths/min`")
-
             else:
                 st.warning("⚠️ No valid time range found between 60–90 seconds.")
                 rmr_range_df = pd.DataFrame()
 
-            # --- Resting Heart Rate (Filtered for HR > 25 bpm) ---
             valid_heart_rates = df[df['HR(bpm)'] > 25]['HR(bpm)']
             if not valid_heart_rates.empty:
                 resting_hr = valid_heart_rates.min()
@@ -90,7 +103,6 @@ if uploaded_file is not None:
             else:
                 st.warning("⚠️ No valid heart rate values found above 25 bpm.")
 
-            # --- Fat vs Carbohydrate Utilization Analysis ---
             if not rmr_range_df.empty:
                 st.subheader("🥑 Fuel Utilization Breakdown")
 
@@ -126,7 +138,6 @@ if uploaded_file is not None:
                 else:
                     st.warning("⚠️ No fuel data available in the RMR window.")
 
-            # --- Downloadable output ---
             csv = df.to_csv(index=False).encode('utf-8')
             st.download_button(
                 label="📥 Download Full CSV with RMR",
