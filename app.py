@@ -101,7 +101,7 @@ if uploaded_file is not None:
             if not valid_heart_rates.empty:
                 resting_hr = valid_heart_rates.min()
                 st.subheader("💓 Resting Heart Rate")
-st.markdown("A lower resting heart rate generally indicates better cardiovascular fitness and more efficient heart function. It means your heart doesn't have to work as hard to maintain a steady beat, which is associated with a reduced risk of heart disease and improved longevity.")
+                st.markdown("A lower resting heart rate generally indicates better cardiovascular fitness and more efficient heart function. It means your heart doesn't have to work as hard to maintain a steady beat, which is associated with a reduced risk of heart disease and improved longevity.")
 
                 def rank_rhr(hr, age, gender):
                     if gender == "Male":
