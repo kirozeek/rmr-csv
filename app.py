@@ -15,15 +15,17 @@ Upload your **PNOE RMR CSV file** and this app will:
 uploaded_file = st.file_uploader("📤 Upload your PNOE CSV file", type="csv")
 
 if uploaded_file is not None:
+    # Try reading the file
     try:
-        # Load CSV with PNOE formatting (semicolon-separated)
         df = pd.read_csv(uploaded_file, sep=';')
-
-        # Check for energy expenditure column
+    except Exception as e:
+        st.error(f"❌ Error processing file: {e}")
+    else:
+        # Proceed if read was successful
         if "EE(kcal/day)" not in df.columns or "T(sec)" not in df.columns:
-            st.error("❌ Could not find required columns 'EE(kcal/day)' or 'T(sec)' in your CSV.")
+            st.error("❌ Required columns 'EE(kcal/day)' or 'T(sec)' not found in your CSV.")
         else:
-            st.success("✅ Data loaded and parsed!")
+            st.success("✅ Data loaded successfully!")
 
             st.subheader("📋 Preview of Energy Expenditure Data")
             st.dataframe(df[['T(sec)', 'PHASE', 'EE(kcal/day)']])
@@ -87,6 +89,3 @@ if uploaded_file is not None:
                 file_name="rmr_energy_results.csv",
                 mime="text/csv"
             )
-
-    except Exception as e:
-        st.error(f"❌ Error processing file: {e}")
