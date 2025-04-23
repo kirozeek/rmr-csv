@@ -10,7 +10,8 @@ Upload your **PNOE RMR CSV file** and this app will:
 - Use the `EE(kcal/day)` column as your RMR value
 - Find the **lowest average RMR** across any 60–90 second span
 - Display the **resting heart rate** (lowest HR > 25 bpm)
-- Show **fat vs. carbohydrate utilization** in a visual pie chart
+- Show **fat vs. carbohydrate utilization** with a pie chart
+- Display **average breathing frequency** during the RMR window
 """)
 
 uploaded_file = st.file_uploader("📤 Upload your PNOE CSV file", type="csv")
@@ -21,8 +22,11 @@ if uploaded_file is not None:
     except Exception as e:
         st.error(f"❌ Error processing file: {e}")
     else:
-        if "EE(kcal/day)" not in df.columns or "T(sec)" not in df.columns or "HR(bpm)" not in df.columns:
-            st.error("❌ Required columns 'EE(kcal/day)', 'T(sec)', or 'HR(bpm)' not found in your CSV.")
+        required_cols = ["EE(kcal/day)", "T(sec)", "HR(bpm)", "FAT(kcal)", "CARBS(kcal)", "BF(bpm)"]
+        missing = [col for col in required_cols if col not in df.columns]
+
+        if missing:
+            st.error(f"❌ Missing required columns: {', '.join(missing)}")
         else:
             st.success("✅ File loaded successfully.")
 
@@ -59,8 +63,17 @@ if uploaded_file is not None:
                 - 🟢 **Lowest Rolling Average RMR:** `{lowest_avg_rmr:.2f} kcal/day`
                 - ⏱️ **Time Range:** `{start_time} sec to {end_time} sec` (`{end_time - start_time:.0f} seconds`)
                 """)
+
+                # Subset data for this time range
+                rmr_range_df = df[(df['T(sec)'] >= start_time) & (df['T(sec)'] <= end_time)]
+
+                # --- Average Breathing Frequency ---
+                avg_bf = rmr_range_df['BF(bpm)'].mean()
+                st.markdown(f"- 💨 **Average Breathing Frequency:** `{avg_bf:.2f} breaths/min`")
+
             else:
                 st.warning("⚠️ No valid time range found between 60–90 seconds.")
+                rmr_range_df = pd.DataFrame()
 
             # --- Resting Heart Rate (Filtered for HR > 25 bpm) ---
             valid_heart_rates = df[df['HR(bpm)'] > 25]['HR(bpm)']
@@ -72,10 +85,8 @@ if uploaded_file is not None:
                 st.warning("⚠️ No valid heart rate values found above 25 bpm.")
 
             # --- Fat vs Carbohydrate Utilization Analysis ---
-            if "FAT(kcal)" in df.columns and "CARBS(kcal)" in df.columns:
+            if not rmr_range_df.empty:
                 st.subheader("🥑 Fuel Utilization Breakdown")
-
-                rmr_range_df = df[(df['T(sec)'] >= start_time) & (df['T(sec)'] <= end_time)]
 
                 avg_fat_kcal = rmr_range_df['FAT(kcal)'].mean()
                 avg_carb_kcal = rmr_range_df['CARBS(kcal)'].mean()
@@ -109,8 +120,6 @@ if uploaded_file is not None:
                     st.plotly_chart(fig, use_container_width=True)
                 else:
                     st.warning("⚠️ No fuel data available in the RMR window.")
-            else:
-                st.warning("⚠️ Columns 'FAT(kcal)' and 'CARBS(kcal)' are missing from your file.")
 
             # --- Downloadable output ---
             csv = df.to_csv(index=False).encode('utf-8')
