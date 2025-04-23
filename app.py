@@ -128,7 +128,7 @@ if uploaded_file is not None:
 
             if not rmr_range_df.empty:
                 st.subheader("🥑 Fuel Utilization Breakdown")
-st.markdown("Metabolic flexibility reflects your body’s ability to switch between fat and carbohydrate metabolism depending on energy demands. Higher fat utilization at rest may indicate more efficient fuel usage and greater metabolic health.")
+                st.markdown("Metabolic flexibility reflects your body’s ability to switch between fat and carbohydrate metabolism depending on energy demands. Higher fat utilization at rest may indicate more efficient fuel usage and greater metabolic health.")
                 avg_fat_kcal = rmr_range_df['FAT(kcal)'].mean()
                 avg_carb_kcal = rmr_range_df['CARBS(kcal)'].mean()
                 total_kcal = avg_fat_kcal + avg_carb_kcal
