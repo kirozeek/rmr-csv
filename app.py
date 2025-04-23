@@ -10,7 +10,7 @@ Upload your **PNOE RMR CSV file** and this app will:
 - Use the `EE(kcal/day)` column as your RMR value
 - Find the **lowest average RMR** across any 60–90 second span
 - Display the **resting heart rate** (lowest HR > 25 bpm)
-- Show **fat vs. carbohydrate utilization** during that time range with a custom chart
+- Show **fat vs. carbohydrate utilization** in a visual pie chart
 """)
 
 uploaded_file = st.file_uploader("📤 Upload your PNOE CSV file", type="csv")
@@ -92,16 +92,18 @@ if uploaded_file is not None:
                     - 🍞 **Carbohydrates:** {avg_carb_kcal:.3f} kcal/min → **{carb_grams:.3f} g/min** (**{carb_percent:.2f}%**)
                     """)
 
-                    # Plotly bar chart with custom color for fat
+                    # Plotly pie chart
                     fig = go.Figure(data=[
-                        go.Bar(name='Fat', x=['Fat'], y=[fat_percent], marker_color='yellow'),
-                        go.Bar(name='Carbohydrates', x=['Carbohydrates'], y=[carb_percent], marker_color='dodgerblue')
+                        go.Pie(
+                            labels=['Fat', 'Carbohydrates'],
+                            values=[fat_percent, carb_percent],
+                            marker=dict(colors=['yellow', 'dodgerblue']),
+                            textinfo='label+percent',
+                            hole=0.4
+                        )
                     ])
                     fig.update_layout(
-                        title='Fuel Utilization Breakdown',
-                        yaxis_title='Percent Utilization (%)',
-                        xaxis_title='Fuel Type',
-                        showlegend=False,
+                        title='Fuel Utilization Breakdown (Pie Chart)',
                         height=400
                     )
                     st.plotly_chart(fig, use_container_width=True)
