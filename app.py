@@ -218,11 +218,11 @@ if uploaded_file is not None:
                         "Grams": [round(carb_grams), round(protein_grams), round(fat_grams), ""],
                         "Calories": [int(round(carb_cals)), int(round(protein_cals)), int(round(fat_cals)), int(round(lowest_avg_rmr))],
                         "% of Total Calories": [
-    f"{round(carb_cals / lowest_avg_rmr * 100)}%",
-    f"{round(protein_cals / lowest_avg_rmr * 100)}%",
-    f"{round(fat_cals / lowest_avg_rmr * 100)}%",
-    "100%"
-]
+                            f"{round(carb_cals / lowest_avg_rmr * 100)}%",
+                            f"{round(protein_cals / lowest_avg_rmr * 100)}%",
+                            f"{round(fat_cals / lowest_avg_rmr * 100)}%",
+                            "100%"
+                        ]
                     })
 
                     st.table(macro_df)
