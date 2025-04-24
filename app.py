@@ -148,7 +148,7 @@ if uploaded_file is not None:
                     st.markdown(f"- 💨 **VO₂ per kg:** `{vo2_per_kg:.2f} ml/min/kg`")
                     st.markdown(f"- 🌬️ **VE/VO₂ Ratio:** `{ve_vo2_ratio:.2f}`")
                     st.markdown(f"- 🫀 **Oxygen Pulse:** `{oxygen_pulse:.2f} ml/beat`")
-                                                    avg_fat_kcal = rmr_range_df['FAT(kcal)'].mean()
+                                                                        avg_fat_kcal = rmr_range_df['FAT(kcal)'].mean()
                 avg_carb_kcal = rmr_range_df['CARBS(kcal)'].mean()
                 total_kcal = avg_fat_kcal + avg_carb_kcal
                 if total_kcal > 0:
