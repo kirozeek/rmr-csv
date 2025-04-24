@@ -87,7 +87,7 @@ if uploaded_file is not None:
                 if avg_bf < 6:
                     st.markdown(f"- 💨 **Average Breathing Frequency:** <span style='color:red'>{avg_bf:.2f} breaths/min</span> ⚠️ _Hypoventilation_", unsafe_allow_html=True)
                 elif avg_bf > 18:
-                                        else:
+                    else:
                     st.markdown(f"- 💨 **Average Breathing Frequency:** `{avg_bf:.2f} breaths/min`")
 
                 # Breathing Frequency Variability
