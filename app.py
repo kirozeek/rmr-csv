@@ -30,7 +30,7 @@ if first_name or last_name:
 
 st.markdown("""
 Upload your **RMR CSV file** and this app will:
-- Use the `EE(kcal/day)` column as your RMR value
+- Use the EE(kcal/day) column as your RMR value
 - Find the **lowest average RMR** across any 75–90 second span
 - Display the **resting heart rate** (lowest HR > 25 bpm)
 - Display **average breathing frequency** with hypoventilation/hyperventilation alerts
@@ -79,8 +79,8 @@ if uploaded_file is not None:
 
             if start_time is not None and end_time is not None:
                 st.markdown(f"""
-                - 🟢 **Lowest Rolling Average RMR:** `{lowest_avg_rmr:.2f} kcal/day`
-                - ⏱️ **Time Range:** `{start_time} sec to {end_time} sec` (`{end_time - start_time:.0f} seconds`)
+                - 🟢 **Lowest Rolling Average RMR:** {lowest_avg_rmr:.2f} kcal/day
+                - ⏱️ **Time Range:** {start_time} sec to {end_time} sec ({end_time - start_time:.0f} seconds)
                 """)
                 rmr_range_df = df[(df['T(sec)'] >= start_time) & (df['T(sec)'] <= end_time)]
                 avg_bf = rmr_range_df['BF(bpm)'].mean()
@@ -89,7 +89,7 @@ if uploaded_file is not None:
                 elif avg_bf > 18:
                     st.markdown(f"- 💨 **Average Breathing Frequency:** <span style='color:red'>{avg_bf:.2f} breaths/min</span> ⚠️ _Hyperventilation_", unsafe_allow_html=True)
                 else:
-                    st.markdown(f"- 💨 **Average Breathing Frequency:** `{avg_bf:.2f} breaths/min`")
+                    st.markdown(f"- 💨 **Average Breathing Frequency:** {avg_bf:.2f} breaths/min")
             else:
                 st.warning("⚠️ No valid time range found between 75–90 seconds.")
                 rmr_range_df = pd.DataFrame()
@@ -98,8 +98,7 @@ if uploaded_file is not None:
             if not valid_heart_rates.empty:
                 resting_hr = valid_heart_rates.min()
                 st.subheader("💓 Resting Heart Rate")
-                st.markdown("A lower resting heart rate generally indicates better cardiovascular fitness and more efficient heart function. It means your heart doesn't have to work as hard to maintain a steady beat, which is associated with a reduced risk of heart disease and improved longevity.
-")
+                st.markdown("A lower resting heart rate generally indicates better cardiovascular fitness and more efficient heart function. It means your heart doesn't have to work as hard to maintain a steady beat, which is associated with a reduced risk of heart disease and improved longevity.")
 
                 def rank_rhr(hr, age, gender):
                     if gender == "Male":
@@ -123,7 +122,7 @@ if uploaded_file is not None:
                     rhr_rank, rhr_color = rank_rhr(resting_hr, age, gender)
                     st.markdown(f"- 🔻 **Resting HR:** <span style='color:{rhr_color}'>{resting_hr:.0f} bpm</span> ({rhr_rank})", unsafe_allow_html=True)
                 else:
-                    st.markdown(f"- 🔻 **Resting HR:** `{resting_hr:.0f} bpm` _(Ranking requires age and gender input)_")
+                    st.markdown(f"- 🔻 **Resting HR:** {resting_hr:.0f} bpm _(Ranking requires age and gender input)_")
             else:
                 st.warning("⚠️ No valid heart rate values found above 25 bpm.")
 
@@ -173,7 +172,7 @@ if uploaded_file is not None:
                 else:
                     predicted_rmr = 655 + (4.35 * weight_lb) + (4.7 * height_in) - (4.7 * age)
                 st.subheader("📐 Predicted vs. Measured RMR")
-                st.markdown(f"- 🧮 **Predicted RMR (Mifflin-St Jeor):** `{predicted_rmr:.2f} kcal/day`")
+                st.markdown(f"- 🧮 **Predicted RMR (Mifflin-St Jeor):** {predicted_rmr:.2f} kcal/day")
                 bar_fig = go.Figure(data=[
                     go.Bar(name="Measured RMR", x=["RMR"], y=[lowest_avg_rmr], marker_color="green"),
                     go.Bar(name="Predicted RMR", x=["RMR"], y=[predicted_rmr], marker_color="blue")
