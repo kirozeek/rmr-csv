@@ -185,7 +185,7 @@ if uploaded_file is not None:
 
                     st.markdown(f"- 🔄 **Metabolic Flexibility:** <span style='color:{flex_color}'>{met_flex_percent:.1f}%</span> ({flex_label})", unsafe_allow_html=True)
                 else:
-                st.warning("⚠️ No fuel data available in the RMR window.")
+                    st.warning("⚠️ No fuel data available in the RMR window.")
 
             if gender in ["Male", "Female"] and height_in > 0 and weight_lb > 0 and age > 0:
                 if gender == "Male":
