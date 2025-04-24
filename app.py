@@ -127,8 +127,6 @@ if uploaded_file is not None:
                 st.warning("⚠️ No valid heart rate values found above 25 bpm.")
 
             if not rmr_range_df.empty:
-                st.subheader("🥑 Fuel Utilization Breakdown")
-
                 st.subheader("🧪 Additional Oxygen Metrics")
                 st.markdown("""
                 These measurements provide further insight into your cardiorespiratory efficiency at rest:
@@ -150,8 +148,7 @@ if uploaded_file is not None:
                     st.markdown(f"- 💨 **VO₂ per kg:** `{vo2_per_kg:.2f} ml/min/kg`")
                     st.markdown(f"- 🌬️ **VE/VO₂ Ratio:** `{ve_vo2_ratio:.2f}`")
                     st.markdown(f"- 🫀 **Oxygen Pulse:** `{oxygen_pulse:.2f} ml/beat`")
-                st.markdown("Metabolic flexibility reflects your body’s ability to switch between fat and carbohydrate metabolism depending on energy demands. Higher fat utilization at rest may indicate more efficient fuel usage and greater metabolic health.")
-                avg_fat_kcal = rmr_range_df['FAT(kcal)'].mean()
+                                avg_fat_kcal = rmr_range_df['FAT(kcal)'].mean()
                 avg_carb_kcal = rmr_range_df['CARBS(kcal)'].mean()
                 total_kcal = avg_fat_kcal + avg_carb_kcal
                 if total_kcal > 0:
@@ -175,7 +172,9 @@ if uploaded_file is not None:
                     fig.update_layout(title='Fuel Utilization Breakdown (Pie Chart)', height=400)
                     st.plotly_chart(fig, use_container_width=True)
 
-                    # Metabolic Flexibility Calculation
+                st.markdown("Metabolic flexibility reflects your body’s ability to switch between fat and carbohydrate metabolism depending on energy demands. Higher fat utilization at rest may indicate more efficient fuel usage and greater metabolic health.")
+
+                # Metabolic Flexibility Calculation
                     met_flex_percent = (avg_fat_kcal / total_kcal) * 100
                     if met_flex_percent > 70:
                         flex_label, flex_color = "Excellent", "green"
