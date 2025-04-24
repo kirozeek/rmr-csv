@@ -181,7 +181,7 @@ if uploaded_file is not None:
                 elif met_flex_percent > 50:
                     flex_label, flex_color = "Moderate", "orange"
                 else:
-                    flex_label, flex_color = "Low", "red""Low", "red"
+                    flex_label, flex_color = "Low", "red"
 
                     st.markdown(f"- 🔄 **Metabolic Flexibility:** <span style='color:{flex_color}'>{met_flex_percent:.1f}%</span> ({flex_label})", unsafe_allow_html=True)
                 else:
