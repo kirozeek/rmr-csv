@@ -87,23 +87,6 @@ if uploaded_file is not None:
                 if avg_bf < 6:
                     st.markdown(f"- 💨 **Average Breathing Frequency:** <span style='color:red'>{avg_bf:.2f} breaths/min</span> ⚠️ _Hypoventilation_", unsafe_allow_html=True)
                 elif avg_bf > 18:
-                    else:
-                    st.markdown(f"- 💨 **Average Breathing Frequency:** `{avg_bf:.2f} breaths/min`")
-
-                # Breathing Frequency Variability
-                bf_std = rmr_range_df['BF(bpm)'].std()
-                bf_cv = (bf_std / avg_bf) * 100 if avg_bf > 0 else 0
-                bf_range = rmr_range_df['BF(bpm)'].max() - rmr_range_df['BF(bpm)'].min()
-
-                if bf_std < 1:
-                    bf_label, bf_color = "Stable", "green"
-                elif bf_std < 2.5:
-                    bf_label, bf_color = "Moderate Variability", "orange"
-                else:
-                    bf_label, bf_color = "High Variability", "red"
-
-                st.markdown(f"- 📊 **BF Variability:** <span style='color:{bf_color}'>{bf_std:.2f} SD</span> — {bf_label}", unsafe_allow_html=True)
-                st.markdown(f"- 🔄 **BF Range:** `{bf_range:.1f} breaths/min`")
                     st.markdown(f"- 💨 **Average Breathing Frequency:** <span style='color:red'>{avg_bf:.2f} breaths/min</span> ⚠️ _Hyperventilation_", unsafe_allow_html=True)
                 else:
                     st.markdown(f"- 💨 **Average Breathing Frequency:** `{avg_bf:.2f} breaths/min`")
@@ -220,11 +203,11 @@ if uploaded_file is not None:
                         "Grams": [round(carb_grams), round(protein_grams), round(fat_grams), ""],
                         "Calories": [int(round(carb_cals)), int(round(protein_cals)), int(round(fat_cals)), int(round(lowest_avg_rmr))],
                         "% of Total Calories": [
-                            f"{round(carb_cals / lowest_avg_rmr * 100)}%",
-                            f"{round(protein_cals / lowest_avg_rmr * 100)}%",
-                            f"{round(fat_cals / lowest_avg_rmr * 100)}%",
-                            "100%"
-                        ]
+    f"{round(carb_cals / lowest_avg_rmr * 100)}%",
+    f"{round(protein_cals / lowest_avg_rmr * 100)}%",
+    f"{round(fat_cals / lowest_avg_rmr * 100)}%",
+    "100%"
+]
                     })
 
                     st.table(macro_df)
