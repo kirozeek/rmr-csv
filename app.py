@@ -85,6 +85,10 @@ if uploaded_file is not None:
                 rmr_range_df = df[(df['T(sec)'] >= start_time) & (df['T(sec)'] <= end_time)]
                 avg_bf = rmr_range_df['BF(bpm)'].mean()
                 if avg_bf < 6:
+                    st.markdown(f"- 💨 **Average Breathing Frequency:** <span style='color:red'>{avg_bf:.2f} breaths/min</span> ⚠️ _Hypoventilation_", unsafe_allow_html=True)
+                elif avg_bf > 18:
+                    st.markdown(f"- 💨 **Average Breathing Frequency:** <span style='color:red'>{avg_bf:.2f} breaths/min</span> ⚠️ _Hyperventilation_", unsafe_allow_html=True)
+                else:
                     st.markdown(f"- 💨 **Average Breathing Frequency:** `{avg_bf:.2f} breaths/min`")
 
                 # Breathing Frequency Variability
@@ -101,7 +105,6 @@ if uploaded_file is not None:
 
                 st.markdown(f"- 📊 **BF Variability:** <span style='color:{bf_color}'>{bf_std:.2f} SD</span> — {bf_label}", unsafe_allow_html=True)
                 st.markdown(f"- 🔄 **BF Range:** `{bf_range:.1f} breaths/min`")
-                elif avg_bf > 18:
                     st.markdown(f"- 💨 **Average Breathing Frequency:** <span style='color:red'>{avg_bf:.2f} breaths/min</span> ⚠️ _Hyperventilation_", unsafe_allow_html=True)
                 else:
                     st.markdown(f"- 💨 **Average Breathing Frequency:** `{avg_bf:.2f} breaths/min`")
