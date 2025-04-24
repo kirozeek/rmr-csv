@@ -176,7 +176,7 @@ if uploaded_file is not None:
 
                 # Metabolic Flexibility Calculation
                 met_flex_percent = (avg_fat_kcal / total_kcal) * 100
-                    if met_flex_percent > 70:
+                if met_flex_percent > 70:
                         flex_label, flex_color = "Excellent", "green"
                     elif met_flex_percent > 50:
                         flex_label, flex_color = "Moderate", "orange"
