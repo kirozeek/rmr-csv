@@ -175,7 +175,7 @@ if uploaded_file is not None:
                 st.markdown("Metabolic flexibility reflects your body’s ability to switch between fat and carbohydrate metabolism depending on energy demands. Higher fat utilization at rest may indicate more efficient fuel usage and greater metabolic health.")
 
                 # Metabolic Flexibility Calculation
-                    met_flex_percent = (avg_fat_kcal / total_kcal) * 100
+                  met_flex_percent = (avg_fat_kcal / total_kcal) * 100
                     if met_flex_percent > 70:
                         flex_label, flex_color = "Excellent", "green"
                     elif met_flex_percent > 50:
