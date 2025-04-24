@@ -128,6 +128,28 @@ if uploaded_file is not None:
 
             if not rmr_range_df.empty:
                 st.subheader("🥑 Fuel Utilization Breakdown")
+
+                st.subheader("🧪 Additional Oxygen Metrics")
+                st.markdown("""
+                These measurements provide further insight into your cardiorespiratory efficiency at rest:
+                - **VO₂ per kg (ml/min/kg):** Reflects oxygen use per unit of body weight — higher values suggest better metabolic fitness.
+                - **VE/VO₂ Ratio:** Indicates how much air is ventilated per unit of oxygen consumed — a proxy for breathing efficiency.
+                - **Oxygen Pulse (VO₂ / HR):** A surrogate for stroke volume — the amount of oxygen used per heartbeat.
+                """)
+
+                if 'VO2(ml/min)' in rmr_range_df.columns and 'VE(l/min)' in rmr_range_df.columns:
+                    avg_vo2 = rmr_range_df['VO2(ml/min)'].mean()
+                    avg_ve = rmr_range_df['VE(l/min)'].mean()
+                    avg_hr = rmr_range_df['HR(bpm)'].mean()
+                    weight_kg = weight_lb * 0.453592
+
+                    vo2_per_kg = avg_vo2 / weight_kg if weight_kg > 0 else 0
+                    ve_vo2_ratio = avg_ve / (avg_vo2 / 1000) if avg_vo2 > 0 else 0
+                    oxygen_pulse = avg_vo2 / avg_hr if avg_hr > 0 else 0
+
+                    st.markdown(f"- 💨 **VO₂ per kg:** `{vo2_per_kg:.2f} ml/min/kg`")
+                    st.markdown(f"- 🌬️ **VE/VO₂ Ratio:** `{ve_vo2_ratio:.2f}`")
+                    st.markdown(f"- 🫀 **Oxygen Pulse:** `{oxygen_pulse:.2f} ml/beat`")
                 st.markdown("Metabolic flexibility reflects your body’s ability to switch between fat and carbohydrate metabolism depending on energy demands. Higher fat utilization at rest may indicate more efficient fuel usage and greater metabolic health.")
                 avg_fat_kcal = rmr_range_df['FAT(kcal)'].mean()
                 avg_carb_kcal = rmr_range_df['CARBS(kcal)'].mean()
@@ -221,3 +243,5 @@ st.download_button(
                 file_name="rmr_energy_results.csv",
                 mime="text/csv"
             )
+
+
